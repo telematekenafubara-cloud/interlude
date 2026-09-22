@@ -163,7 +163,7 @@ export const listAiKeys = createServerFn({ method: "GET" }).handler(async () => 
 function missingKey(name: string): AskResult {
   return {
     ok: false,
-    error: `${name} is not connected. Pick Grok for this task, or add that model’s key in this app’s secrets.`,
+    error: `${name} is not available. Try Grok for this.`,
   };
 }
 
@@ -234,7 +234,7 @@ async function chatGrok(
     if (kind === "hold") return { ok: true, text: localHold(prompt), ms: 0 };
     const local = answerProduct(prompt) ?? answerHelp(prompt);
     if (local) return { ok: true, text: local, ms: 0 };
-    return { ok: false, error: "Holdey is not available in this environment." };
+    return { ok: false, error: "Holdey could not start that. Skip and try again." };
   }
   if (!allow("chat")) {
     return { ok: false, error: "Holdey is taking a short pause. Try again in a few minutes." };

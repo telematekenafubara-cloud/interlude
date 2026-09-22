@@ -3,13 +3,9 @@ import {
   PROVIDERS,
   TASKS,
   useAiRouting,
-  type ProviderId,
   type TaskId,
 } from "@/lib/ai-routing";
-import { listAiKeys } from "@/lib/ask-grok";
 import { cn } from "@/lib/utils";
-
-type Keys = Record<ProviderId, boolean>;
 
 export function ModelPicker({
   task = "chat",
@@ -19,28 +15,10 @@ export function ModelPicker({
   const routing = useAiRouting((s) => s.routing);
   const setTask = useAiRouting((s) => s.setTask);
   const [focus, setFocus] = useState<TaskId>(task);
-  const [keys, setKeys] = useState<Keys>({
-    grok: true,
-    gemini: false,
-    chatgpt: false,
-    claude: false,
-  });
 
   useEffect(() => {
     setFocus(task);
   }, [task]);
-
-  useEffect(() => {
-    let live = true;
-    listAiKeys()
-      .then((next) => {
-        if (live) setKeys(next);
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, []);
 
   const current = TASKS.find((t) => t.id === focus) ?? TASKS[0];
   const grokOnly = Boolean(current.grokOnly);
@@ -71,7 +49,6 @@ export function ModelPicker({
         {PROVIDERS.map((p) => {
           const locked = grokOnly && p.id !== "grok";
           const on = routing[focus] === p.id;
-          const ready = keys[p.id];
           return (
             <button
               key={p.id}
@@ -87,7 +64,6 @@ export function ModelPicker({
               )}
             >
               {p.name}
-              {!ready && p.id !== "grok" ? " · key" : ""}
             </button>
           );
         })}

@@ -6,10 +6,10 @@ export type ProviderId = "grok" | "gemini" | "chatgpt" | "claude";
 export type TaskId = "chat" | "image" | "video" | "hold";
 
 export const PROVIDERS: { id: ProviderId; name: string; line: string }[] = [
-  { id: "grok", name: "Grok", line: "xAI. Live in this app." },
-  { id: "gemini", name: "Gemini", line: "Google. Needs a Gemini key." },
-  { id: "chatgpt", name: "ChatGPT", line: "OpenAI. Needs an OpenAI key." },
-  { id: "claude", name: "Claude", line: "Anthropic. Needs a Claude key." },
+  { id: "grok", name: "Grok", line: "Live in this app." },
+  { id: "gemini", name: "Gemini", line: "Google." },
+  { id: "chatgpt", name: "ChatGPT", line: "OpenAI." },
+  { id: "claude", name: "Claude", line: "Anthropic." },
 ];
 
 export const TASKS: { id: TaskId; name: string; grokOnly?: boolean }[] = [
