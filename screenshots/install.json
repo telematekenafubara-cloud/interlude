@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/install",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1646,
+      "bodyTextHash": "50856cf856f0c5824d7d74433c9116873841685183ab3c59031af20ed92f456c",
+      "bodyTextPrefix": "Interlude Install Formats Studio Add to your app DROP-IN FOR ANY",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/install.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1631,
+      "bodyTextHash": "e2081eca48d2c4a02c113d154349939dbac14b02501fcbda03af5ae5bdd8e73b",
+      "bodyTextPrefix": "Interlude Install Add to your app DROP-IN FOR ANY AI PRODUCT YOU",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/install-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/install.json"
+}

@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/network",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 3218,
+      "bodyTextHash": "b302cc42a8b023746b2418dd35476a38ee6ac6f7ccc01cf3e535e30830f76c56",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install Proposal Add to your app DEMAND",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/network.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 3193,
+      "bodyTextHash": "889d135e23649d8383ad41a5dcb0384c9ec6ba2418dc61d3fe30f4bd533113b7",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install DEMAND · PROTOCOL · PAYOUTS How",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/network-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/network.json"
+}

@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2469,
+      "bodyTextHash": "bb71c62b3b8040eeea3e18ccb57ea94db6c3d47886a6ba379931826031f2228a",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Install Run a Hold A",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/home-now.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2454,
+      "bodyTextHash": "00f2cc0d0915bc117afcf2169556014e90b32abe89d82b5afe000b6f03b4e3b3",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Run A NEW AD FORMAT ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/home-now-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/home-now.json"
+}

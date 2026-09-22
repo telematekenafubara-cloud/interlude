@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/bank",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2029,
+      "bodyTextHash": "5e0e00e57f0385b06f967e1cfe57e6234ddad995f904a18e5a4723707b0b3c3d",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install Proposal Add to your app INTERL",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/bank.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2170,
+      "bodyTextHash": "62654ceaded5db3b39ff3976d7a41d0ea41c705ac51fb321e4bde3482b84b85b",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install INTERLUDE BANK Watch a Hold. Ge",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/bank-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/bank.json"
+}

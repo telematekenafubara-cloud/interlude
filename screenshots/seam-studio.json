@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/studio",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 872,
+      "bodyTextHash": "e04caf54e18d2a6f503384d6131e84269d4571124c97387808c544fa6f0fca44",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install FOR ADVERTISERS Run",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam-studio.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 872,
+      "bodyTextHash": "8dbf75dd5d88f2e07c3bc8f7806f03ee936271af54d857a49fc6449112a1ebdb",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install FOR ADVERTISERS Run",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam-studio-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/seam-studio.json"
+}

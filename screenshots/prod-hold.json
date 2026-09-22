@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8081/hold",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1224,
+      "bodyTextHash": "70ce39f8818627c61ebaf9349c66c02e05b7e8dc4e88090c34a337306d237670",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install THE UNIT A Hold. A ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/prod-hold.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1224,
+      "bodyTextHash": "70ce39f8818627c61ebaf9349c66c02e05b7e8dc4e88090c34a337306d237670",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install THE UNIT A Hold. A ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/prod-hold-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/prod-hold.json"
+}

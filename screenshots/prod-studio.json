@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8081/studio",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 872,
+      "bodyTextHash": "e04caf54e18d2a6f503384d6131e84269d4571124c97387808c544fa6f0fca44",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install FOR ADVERTISERS Run",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/prod-studio.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 872,
+      "bodyTextHash": "e04caf54e18d2a6f503384d6131e84269d4571124c97387808c544fa6f0fca44",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install FOR ADVERTISERS Run",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/prod-studio-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/prod-studio.json"
+}

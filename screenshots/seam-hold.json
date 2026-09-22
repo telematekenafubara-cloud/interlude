@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/hold",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1224,
+      "bodyTextHash": "70ce39f8818627c61ebaf9349c66c02e05b7e8dc4e88090c34a337306d237670",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install THE UNIT A Hold. A ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam-hold.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1224,
+      "bodyTextHash": "8ea2f1470ca944e6f4db98399641f997c2ad922936d4ad91c8ecdecd81de087c",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install THE UNIT A Hold. A ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam-hold-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/seam-hold.json"
+}

@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/bank",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1889,
+      "bodyTextHash": "122c48e0653aa120da148cf7ecd13630bd929dd408f0926916abcf0005a4b587",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install INTERLUDE BANK Inte",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/bank-held.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2018,
+      "bodyTextHash": "13fec6a305b5864b061ccfe28127d6eda4f52b968b18b63c2b8d7959f1ebfec2",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install INTERLUDE BANK Inte",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/bank-held-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/bank-held.json"
+}

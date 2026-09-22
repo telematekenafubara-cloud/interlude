@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8080/holder",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2207,
+      "bodyTextHash": "cba1665131031fcdcc8906adc43dd49cba83c7730f93e980857df4376c813d2a",
+      "bodyTextPrefix": "Interlude Hold Holder Bank Network Ask Install THE HOLDER Who ow",
+      "horizontalOverflow": false,
+      "consoleErrors": [
+        "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:\n\n- A server/client branch `if (typeof window !== 'undefined')`.\n- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.\n- Date formatting in a user's locale which doesn't match the server.\n- External changing data without sending a snapshot of it along with the HTML.\n- Invalid HTML tag nesting.\n\nIt can also happen if the client has a browser extension installed which messes with the HTML before React loaded.\n\n%s%s https://react.dev/link/hydration-mismatch \n\n  ...\n    <Lazy>\n      <HolderPage>\n        <div className=\"min-h-dvh ...\">\n          <SiteNav>\n          <main className=\"mx-auto mi...\">\n            <section>\n            <section>\n            <div className=\"mt-16 grid...\">\n              <div>\n              <div className=\"order-1 mi...\">\n                <div className=\"answer-in\">\n                  <SurfacePhone surface={{id:\"thread\",n:\"01\", ...}}>\n                    <PhoneFrame clock=\"10:14\" carrier=\"ShoreNet\">\n                      <div className=\"mx-auto w-...\">\n                        <div className=\"rounded-[3...\">\n                          <div className=\"relative f...\">\n                            <StatusBar>\n                            <PhoneHeader>\n                            <div>\n                            <form className=\"flex shrin...\" onSubmit={function onSubmit}>\n                              <input\n                                value=\"Abeg wetin be my airtime and data so?\"\n                                onChange={function onChange}\n                                disabled={false}\n                                placeholder=\"Message\"\n                                className=\"h-11 min-w-0 flex-1 rounded-full bg-muted px-4 text-sm text-foreground outl...\"\n                                aria-label=\"Message\"\n-                               style={{}}\n                              >\n                              ...\n                            ...\n              ...\n          ...\n"
+      ],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/holder-page.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2123,
+      "bodyTextHash": "f7cbd13f4889ac52201d097af89ebd72fc226f5a7e178e07e5139419953e526f",
+      "bodyTextPrefix": "Interlude Hold Holder Bank Network Ask Install THE HOLDER Who ow",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/holder-page-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/holder-page.json"
+}

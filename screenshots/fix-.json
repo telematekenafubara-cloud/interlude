@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2451,
+      "bodyTextHash": "a35c0a715b1c3bb672271040538ac334020e0a3eee1b06f7612e4afda28301f0",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install A NEW AD FORMAT The",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/fix-.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 2451,
+      "bodyTextHash": "de4050d3f9ce6a41ad7f495534170a822cb1aa190f7e40b547c78ae938b08b74",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install A NEW AD FORMAT The",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/fix--mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/fix-.json"
+}

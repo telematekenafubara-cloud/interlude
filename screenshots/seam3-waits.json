@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/waits",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1030,
+      "bodyTextHash": "9366f879dda807063618ba427c29719ca474b3aaaa13488a8e76f3f674d234fb",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install WHERE AFRICA ALREAD",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam3-waits.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 914,
+      "bodyTextHash": "40425444d1e9dcd6fc63bd29f1ead526e286f8a798bd28c198b43017b68d0dd8",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Network Ask Install WHERE AFRICA ALREAD",
+      "horizontalOverflow": true,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/seam3-waits-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/seam3-waits.json"
+}

@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/studio",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 834,
+      "bodyTextHash": "6774a12f8f6d79033e4b680b027d37e8335f26beef14b9d1cfcc40e614134759",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install Proposal Add to your app FOR AD",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 809,
+      "bodyTextHash": "c8aaf220ea10e3cd649106c6e92663dfdf85b51f626460204d09ccd26aaf0016",
+      "bodyTextPrefix": "Interlude Hold Wait Bank Install FOR ADVERTISERS Run a Hold. Pla",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/studio-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}

@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8081/network",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 3215,
+      "bodyTextHash": "57f91524dfd4be04bcbca2aac84745110a8869c5e52a6084ebea2cbb3ac649f5",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Install Run a Hold D",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/network-fixed.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 3200,
+      "bodyTextHash": "2e0be25a0a0fbedc25d8ab14faa77ddccc9ec08f8c7414515fce27b5ceb03e21",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Run DEMAND · PROTOCO",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/network-fixed-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/network-fixed.json"
+}

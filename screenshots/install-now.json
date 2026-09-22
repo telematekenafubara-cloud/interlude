@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/install",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1994,
+      "bodyTextHash": "10bde192f6da1b6d113cf2d6f5e23ca8c3d11ddff5480651d915c26da5163cf0",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Install Run a Hold D",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/install-now.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Interlude",
+      "hasCanvas": false,
+      "bodyTextLen": 1979,
+      "bodyTextHash": "9266a69c66fa6271fbb8a7d83cd3fb49230212ddcfcc91cadeaa72c2a1fd093d",
+      "bodyTextPrefix": "Ask Aether Interlude Hold Wait Bank Network Run DROP-IN FOR ANY ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/install-now-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/install-now.json"
+}
