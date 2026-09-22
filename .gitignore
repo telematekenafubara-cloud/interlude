@@ -3,3 +3,22 @@ node_modules/
 .github_repo
 .env
 .env.*
+!.env.example
+
+# Build / preview output
+.vercel/output/
+.tanstack/
+dist/
+
+# Local-only workspace dumps
+artifacts/
+screenshots/
+tmp/
+attachments/
+*.log
+
+# Grok sandbox internals — keep only the auth flag used at build time
+.grok/*
+!.grok/app-env.json
+AGENTS.md
+AGENTS.project.md
