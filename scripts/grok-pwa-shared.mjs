@@ -106,15 +106,25 @@ export function publicAppHost(hostHeader) {
 
 /**
  * Published apps always use `VITE_PUBLIC_HOSTNAME` (the grok.me host the
- * deployer injects). Live preview has no such env, so fall back to the
- * request host / X-Forwarded-Host. Never prefer request Host on a published
- * app — Envoy rewrites it to `*.vercel.app`.
+ * deployer injects, or a user-owned production host such as
+ * `interlude-vert.vercel.app`). Live preview has no such env, so fall back
+ * to the request host / X-Forwarded-Host. Never prefer request Host on a
+ * published grok.me app — Envoy rewrites it to `*.vercel.app` and SSO-protects
+ * `/og.jpg`. An explicit `VITE_PUBLIC_HOSTNAME` is allowed even when it is a
+ * Vercel production alias, because that host is public and serves `/og.jpg`.
  */
 export function resolvePublicHost(hostHeader) {
-  return (
-    publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader)
-  );
+  const published = String(process.env?.VITE_PUBLIC_HOSTNAME ?? "")
+    .split(",")[0]
+    .trim()
+    .split(":")[0]
+    .toLowerCase();
+  if (published && /^[a-z0-9.-]+$/.test(published) && published.includes(".")) {
+    return published;
+  }
+  return publicAppHost(hostHeader);
 }
+
 
 export function isInstallQuery(url) {
   const query = String(url ?? "").split("?", 2)[1] ?? "";
