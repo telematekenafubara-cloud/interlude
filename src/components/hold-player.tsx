@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { SkipArrow } from "@/components/skip-arrow";
 import { unlockHoldAudio } from "@/lib/hold-audio";
 import { openWatch } from "@/lib/watch";
@@ -43,7 +43,7 @@ export function HoldPlayer({
   function openFull(e?: React.MouseEvent) {
     e?.stopPropagation();
     onCta();
-    openWatch(ad.id);
+    openWatch(ad);
   }
 
   if (format === "native") {
@@ -54,7 +54,7 @@ export function HoldPlayer({
           exiting && "hold-exit",
         )}
         onClick={() => openFull()}
-        role="link"
+        role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -62,7 +62,7 @@ export function HoldPlayer({
             openFull();
           }
         }}
-        aria-label={`Watch ${ad.name} full on Interlude`}
+        aria-label={`Watch ${ad.name} full on this page`}
       >
         <div className="flex gap-3 p-3 sm:gap-4 sm:p-4">
           <div className="relative h-24 w-28 shrink-0 overflow-hidden rounded-md outline outline-1 -outline-offset-1 outline-foreground/10 sm:h-28 sm:w-36">
@@ -94,10 +94,9 @@ export function HoldPlayer({
             <button
               type="button"
               onClick={(e) => openFull(e)}
-              className="mt-3 inline-flex h-9 items-center gap-1 rounded-md bg-accent px-3 text-sm font-medium text-accent-foreground"
+              className="mt-3 inline-flex h-9 items-center rounded-md bg-accent px-3 text-sm font-medium text-accent-foreground"
             >
               Watch full
-              <ArrowUpRight className="size-3.5" strokeWidth={1.75} />
             </button>
           </div>
         </div>
@@ -124,7 +123,7 @@ export function HoldPlayer({
         exiting && "hold-exit",
       )}
       onClick={() => openFull()}
-      role="link"
+      role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -132,7 +131,7 @@ export function HoldPlayer({
           openFull();
         }
       }}
-      aria-label={`Watch ${ad.name} full on Interlude`}
+      aria-label={`Watch ${ad.name} full on this page`}
     >
       {sound.visual}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
@@ -227,14 +226,13 @@ export function HoldPlayer({
           type="button"
           onClick={(e) => openFull(e)}
           className={cn(
-            "pointer-events-auto inline-flex items-center gap-1.5 rounded-md bg-accent font-medium text-accent-foreground",
+            "pointer-events-auto inline-flex items-center rounded-md bg-accent font-medium text-accent-foreground",
             compact
               ? "mt-3 h-9 px-3 text-sm"
               : "mt-4 h-11 px-4 text-sm",
           )}
         >
           Watch full
-          <ArrowUpRight className="size-4" strokeWidth={1.75} />
         </button>
         {compact ? null : (
           <p className="mt-1.5 text-[0.625rem] uppercase tracking-[0.14em] text-foreground/55">

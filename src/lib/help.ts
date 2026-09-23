@@ -25,7 +25,7 @@ const PAGES = [
   { path: "/studio", name: "Run a Hold", line: "Advertiser desk. Samples, place a finished Hold, or generate with Holdey." },
   { path: "/network", name: "Network", line: "How a Hold gets bought: house IO, then VAST, then OpenRTB. Demo auction only." },
   { path: "/proposal", name: "Proposal", line: "Funding note. $80k seed. Expected Revenue at 50,000 Holders." },
-  { path: "/ask", name: "Ask", line: "Full Holdey. A Hold plays while it thinks, then the reply." },
+  { path: "/ask", name: "Ask Holdey", line: "Full Holdey. A Hold plays while it thinks, then the reply." },
 ];
 
 const MONTHLY_EARN = (() => {

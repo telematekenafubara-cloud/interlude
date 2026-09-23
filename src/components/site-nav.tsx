@@ -13,7 +13,7 @@ const PAGES = [
   { to: "/network", label: "Network" },
   { to: "/studio", label: "Studio" },
   { to: "/proposal", label: "Proposal" },
-  { to: "/ask", label: "Ask" },
+  { to: "/ask", label: "Ask Holdey" },
 ] as const;
 
 export function SiteNav({ solid = false }: { solid?: boolean }) {

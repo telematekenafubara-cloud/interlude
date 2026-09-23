@@ -6,7 +6,6 @@ import { useBankStore } from "@/lib/bank-store";
 import { unlockHoldAudio } from "@/lib/hold-audio";
 import { FULL_CPM, usd, usdFine, VIEWER_SHARE } from "@/lib/rates";
 import { FULL_HOLD_MS } from "@/lib/watch";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/watch/$adId")({
   component: WatchPage,
@@ -20,7 +19,6 @@ function WatchPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const credited = useRef(false);
   const failed = useRef(false);
-  const started = useRef(false);
   const [state, setState] = useState<WatchState>("playing");
   const [elapsed, setElapsed] = useState(0);
   const [useVideo, setUseVideo] = useState(Boolean(ad.video));
@@ -48,7 +46,6 @@ function WatchPage() {
   useEffect(() => {
     credited.current = false;
     failed.current = false;
-    started.current = false;
     setState("playing");
     setElapsed(0);
     setUseVideo(Boolean(ad.video));
@@ -61,6 +58,7 @@ function WatchPage() {
     let cancelled = false;
     if (v && useVideo) {
       v.controls = false;
+      v.loop = true;
       v.volume = 0.9;
       const start = () => {
         if (cancelled) return;
@@ -69,15 +67,12 @@ function WatchPage() {
           .play()
           .then(() => {
             if (cancelled) return;
-            started.current = true;
             v.muted = false;
           })
           .catch(() => {
             if (cancelled) return;
             v.muted = true;
-            void v.play().then(() => {
-              started.current = true;
-            });
+            void v.play();
           });
       };
       if (v.readyState >= 2) start();
@@ -89,7 +84,7 @@ function WatchPage() {
       if (failed.current || credited.current) return;
       const e = now - t0;
       setElapsed(e);
-      if (!useVideo && e >= FULL_HOLD_MS) {
+      if (e >= FULL_HOLD_MS) {
         pay();
         return;
       }
@@ -110,13 +105,7 @@ function WatchPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ad.id, useVideo, state]);
 
-  const duration = useVideo ? 0 : FULL_HOLD_MS;
-  const pct = Math.min(
-    100,
-    useVideo && videoRef.current?.duration
-      ? (elapsed / (videoRef.current.duration * 1000)) * 100
-      : (elapsed / FULL_HOLD_MS) * 100,
-  );
+  const pct = Math.min(100, (elapsed / FULL_HOLD_MS) * 100);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -141,26 +130,11 @@ function WatchPage() {
                 poster={ad.still}
                 autoPlay
                 muted
+                loop
                 playsInline
                 preload="auto"
                 disablePictureInPicture
                 controls={false}
-                onEnded={pay}
-                onPause={(e) => {
-                  if (credited.current || failed.current) return;
-                  if (!started.current) return;
-                  if (e.currentTarget.ended) return;
-                  fail();
-                }}
-                onPlaying={() => {
-                  started.current = true;
-                }}
-                onSeeking={(e) => {
-                  const v = e.currentTarget;
-                  if (state === "playing" && v.currentTime > 0.25) {
-                    v.currentTime = Math.min(v.currentTime, 0.05);
-                  }
-                }}
                 onContextMenu={(e) => e.preventDefault()}
                 onError={() => setUseVideo(false)}
                 className="absolute inset-0 h-full w-full object-cover"
@@ -193,7 +167,7 @@ function WatchPage() {
               <div className="absolute inset-x-0 bottom-0 h-1 bg-foreground/10">
                 <div
                   className="h-full bg-hold"
-                  style={{ width: `${Math.min(100, pct || (elapsed / (duration || FULL_HOLD_MS)) * 100)}%` }}
+                  style={{ width: `${pct}%` }}
                 />
               </div>
             ) : null}
