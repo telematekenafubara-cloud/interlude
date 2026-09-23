@@ -649,13 +649,12 @@ const SITE_PATHS = [
   "/bank",
   "/install",
   "/studio",
-  "/network",
   "/proposal",
   "/ask",
 ] as const;
 
 function LinkedCopy({ text }: { text: string }) {
-  const re = /(\/(?:hold|holder|waits|bank|install|studio|network|proposal|ask))/g;
+  const re = /(\/(?:hold|holder|waits|bank|install|studio|proposal|ask))/g;
   const bits = text.split(re);
   return (
     <>

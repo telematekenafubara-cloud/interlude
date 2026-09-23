@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { SiteFooter } from "@/components/site-footer";
@@ -60,12 +60,8 @@ function InstallPage() {
           Interlude does not inject into ChatGPT, Claude, or Gemini — those are
           not your apps. Put it in the product you control: a chatbot, a support
           agent, a coding assistant, a search box. After five seconds, a skip
-          arrow. Then the answer. Selling that wait to a real ad network is a
-          separate sequence — see{" "}
-          <Link to="/network" className="text-foreground underline-offset-4 hover:underline">
-            Network
-          </Link>
-          .
+          arrow. Then the answer. Selling that wait on an exchange is company
+          work, not part of this install.
         </p>
         <div className="mt-14 grid min-w-0 items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <SnippetPanel />

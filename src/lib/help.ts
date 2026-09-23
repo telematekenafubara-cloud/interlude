@@ -23,7 +23,6 @@ const PAGES = [
   { path: "/bank", name: "Bank", line: "Watcher and Holder wallets. 40% watcher, 35% Holder, 25% Interlude. Full watch on /watch pays more." },
   { path: "/install", name: "Install", line: "Drop-in hold.js. Interlude.holder() then whileWaiting()." },
   { path: "/studio", name: "Run a Hold", line: "Advertiser desk. Samples, place a finished Hold, or generate with Holdey." },
-  { path: "/network", name: "Network", line: "How a Hold gets bought: house IO, then VAST, then OpenRTB. Demo auction only." },
   { path: "/proposal", name: "Proposal", line: "Funding note. $80k seed. Expected Revenue at 50,000 Holders." },
   { path: "/ask", name: "Ask Holdey", line: "Full Holdey. A Hold plays while it thinks, then the reply." },
 ];
@@ -71,7 +70,7 @@ const FAQ: { keys: string[]; answer: string }[] = [
   {
     keys: ["network", "auction", "openrtb", "vast", "dsp", "google ads"],
     answer:
-      "Network is at /network. It is the map of how a Hold gets bought: house ads first, then a VAST tag, then OpenRTB. Nothing is live to Google. Run the sample auction on that page. Split on a completed Hold is watcher 40%, Holder 35%, Interlude 25%.",
+      "A Hold is sold as skippable video: house ads and direct orders first. An exchange is not connected. Split on a completed Hold is watcher 40%, Holder 35%, Interlude 25%. That buying map stays inside the company.",
   },
   {
     keys: ["holder", "host", "publisher", "own the chat", "app owner", "types of holders"],
@@ -121,7 +120,7 @@ const FAQ: { keys: string[]; answer: string }[] = [
   {
     keys: ["faq", "help", "how", "where", "navigate", "pages", "site"],
     answer:
-      "Pages: /hold the unit, /holder who owns the wait, /bank money, /install the SDK, /studio place ads, /network how ads are bought, /proposal funding. Ask again with a name if you want one of those opened in words.",
+      "Pages: /hold the unit, /holder who owns the wait, /bank money, /install the SDK, /studio place ads, /proposal funding. Ask again with a name if you want one of those opened in words.",
   },
 ];
 

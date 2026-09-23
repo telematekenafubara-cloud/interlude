@@ -36,9 +36,6 @@ export function SiteFooter() {
           <Link to="/studio" className="hover:text-foreground">
             Run a Hold
           </Link>
-          <Link to="/network" className="hover:text-foreground">
-            Network
-          </Link>
           <Link to="/proposal" className="hover:text-foreground">
             Proposal
           </Link>
