@@ -31,6 +31,7 @@ export default defineHandler(async (event) => {
       pageOrigin: body.pageOrigin ?? null,
       ts: Number(body.ts) || 0,
       webdriver: Boolean(body.webdriver),
+      watchMs: body.watchMs == null ? null : Number(body.watchMs),
       userAgent,
       ipHash,
       apiKey,
