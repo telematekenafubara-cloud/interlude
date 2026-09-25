@@ -11,9 +11,16 @@ import {
   type FormatId,
   type PlayableOption,
 } from "@/lib/ads";
+import { fetchHoldDecision } from "@/lib/fetch-hold-decision";
 import { WAIT_MS, type WaitSurface } from "@/lib/africa-waits";
 import { useBankStore } from "@/lib/bank-store";
 import { unlockHoldAudio } from "@/lib/hold-audio";
+
+
+async function nextHoldAdId(): Promise<string> {
+  const decided = await fetchHoldDecision({ holder: "holdey", mode: "priority" });
+  return decided?.adId || randomAdId();
+}
 
 export type WaitPhase = "idle" | "hold" | "done";
 
@@ -53,7 +60,7 @@ export function useWaitSession(surface: WaitSurface) {
     setAnswerReady(false);
     setPickedId(null);
     setFormat("cinematic");
-    setAdId(randomAdId());
+    void nextHoldAdId().then((id) => setAdId(id));
   }, [surface.id, surface.prompt]);
 
   useEffect(() => {
@@ -124,7 +131,7 @@ export function useWaitSession(surface: WaitSurface) {
     }, 280);
   }
 
-  function start() {
+  async function start() {
     unlockHoldAudio();
     skipRef.current = false;
     workReadyRef.current = false;
@@ -132,7 +139,8 @@ export function useWaitSession(surface: WaitSurface) {
     elapsedRef.current = 0;
     formatRef.current = "cinematic";
     sessionRef.current += 1;
-    setAdId(randomAdId());
+    const nextId = await nextHoldAdId();
+    setAdId(nextId);
     setFormat("cinematic");
     setPickedId(null);
     setAnswerReady(false);
