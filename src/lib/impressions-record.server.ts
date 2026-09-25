@@ -12,6 +12,7 @@ import {
   type ImpressionStatus,
 } from "./impressions-core.server";
 import { seedHolders } from "./impressions-holders.server";
+import { creditImpression } from "@/lib/bank.server";
 
 const RATE_VIEWER = 60;
 const RATE_IP = 120;
@@ -175,6 +176,24 @@ export async function recordImpression(input: RecordInput): Promise<RecordResult
       ipHash: input.ipHash,
       holderId: input.holder,
     });
+    // Bank credit (idempotent). Rejected Holds never reach here → ₦0.
+    try {
+      const view = classifyViewability({
+        skipped: input.skipped,
+        watchMs: input.watchMs,
+      });
+      const outcome =
+        view.ok && view.outcome === "skipped" ? "skipped" : "completed";
+      await creditImpression({
+        impressionId: input.id,
+        holderId: input.holder,
+        viewerId: input.viewer,
+        outcome,
+        source: input.source || "hold.js",
+      });
+    } catch (err) {
+      console.error("[bank] credit after impression failed:", err);
+    }
   }
 
   const counts = await holderCounts(input.holder);
