@@ -1,7 +1,3 @@
-/**
- * Server-side Hold impression ledger.
- * Counts completed vs skipped Holds per Holder with basic fraud filters.
- */
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { getSql } from "@/lib/db";
 
@@ -12,7 +8,8 @@ export type ImpressionStatus =
   | "rejected_bot"
   | "rejected_sig"
   | "rejected_skew"
-  | "rejected_holder";
+  | "rejected_holder"
+  | "rejected_viewability";
 
 export type BeaconBody = {
   id: string;
@@ -24,6 +21,7 @@ export type BeaconBody = {
   pageOrigin?: string | null;
   ts: number;
   webdriver?: boolean;
+  watchMs?: number | null;
 };
 
 export type VerifyInput = {
@@ -38,9 +36,7 @@ const RATE_IP = 120;
 const RATE_HOLDER = 2000;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
 
-/** In-memory sliding windows (v1). Process-local; DB is the durable backup. */
 const rateBuckets = new Map<string, number[]>();
-
 
 export function hashKey(raw: string): string {
   return createHash("sha256").update(raw, "utf8").digest("hex");
@@ -55,13 +51,7 @@ export function hashIp(ip: string, salt?: string): string {
 }
 
 export function signPayload(
-  parts: {
-    id: string;
-    holder: string;
-    ad: string;
-    skipped: boolean;
-    ts: number;
-  },
+  parts: { id: string; holder: string; ad: string; skipped: boolean; ts: number },
   secret: string,
 ): string {
   const msg = `${parts.id}|${parts.holder}|${parts.ad}|${parts.skipped ? "1" : "0"}|${parts.ts}`;
@@ -86,6 +76,62 @@ function allowUnsignedHoldey(): boolean {
   return process.env.NODE_ENV !== "production";
 }
 
+export const SKIP_AFTER_MS = 5000;
+export const COMPLETE_MIN_WATCH_MS = SKIP_AFTER_MS;
+export const SKIP_MIN_WATCH_MS = 500;
+
+const BOT_UA =
+  /headless|phantomjs|puppeteer|selenium|playwright|slimerjs|electron\/\d|\bbot\b|crawler|spider|curl\/|wget\/|python-requests|go-http-client|httpclient|scrapy/i;
+
+export function softBotCheck(input: {
+  userAgent?: string | null;
+  webdriver?: boolean;
+}): string | null {
+  if (input.webdriver === true) return "webdriver";
+  const ua = (input.userAgent ?? "").trim();
+  if (!ua) return "empty_ua";
+  if (BOT_UA.test(ua)) return "bot_ua";
+  return null;
+}
+
+export type ViewabilityResult =
+  | { ok: true; outcome: "completed" | "skipped" }
+  | { ok: false; reason: string };
+
+export function classifyViewability(input: {
+  skipped: boolean;
+  watchMs?: number | null;
+}): ViewabilityResult {
+  if (typeof input.skipped !== "boolean") {
+    return { ok: false, reason: "missing_skipped" };
+  }
+  const watch =
+    input.watchMs == null || (input.watchMs as unknown) === ""
+      ? null
+      : Number(input.watchMs);
+
+  if (input.skipped === true) {
+    if (watch != null && Number.isFinite(watch) && watch < SKIP_MIN_WATCH_MS) {
+      return { ok: false, reason: "skip_too_fast" };
+    }
+    return { ok: true, outcome: "skipped" };
+  }
+
+  if (watch == null || !Number.isFinite(watch)) {
+    return { ok: false, reason: "missing_watch_ms" };
+  }
+  if (watch < COMPLETE_MIN_WATCH_MS) {
+    return { ok: false, reason: "incomplete_watch" };
+  }
+  return { ok: true, outcome: "completed" };
+}
+
+export function checkImpressionId(id: string): boolean {
+  if (typeof id !== "string") return false;
+  const s = id.trim();
+  return s.length >= 8 && s.length <= 128;
+}
+
 export function checkTimestampSkew(ts: number, now = Date.now()): boolean {
   if (!Number.isFinite(ts) || ts <= 0) return false;
   return Math.abs(now - ts) <= SKEW_MS;
@@ -105,7 +151,6 @@ function bumpRate(key: string, now: number): void {
   rateBuckets.set(key, next);
 }
 
-/** Pure rate-limit check (memory). Returns reject reason or null. */
 export function checkRateLimits(input: {
   viewerId?: string | null;
   ipHash?: string | null;
@@ -138,7 +183,6 @@ export function markRateAccepted(input: {
   bumpRate(`h:${input.holderId}`, now);
 }
 
-/** Reset in-memory rate buckets (tests). */
 export function resetRateBuckets(): void {
   rateBuckets.clear();
 }
@@ -147,13 +191,15 @@ export type VerifyResult =
   | { ok: true; auth: "key" | "secret" | "unsigned_holdey" }
   | { ok: false; status: ImpressionStatus; reason: string };
 
-/**
- * Verify beacon auth: per-holder API key, shared HMAC secret, or relaxed
- * unsigned Holdey (when INTERLUDE_ALLOW_UNSIGNED_HOLDEY allows it).
- */
 export async function verifyBeacon(input: VerifyInput): Promise<VerifyResult> {
   const { body, signature, apiKey } = input;
-  if (!body?.id || !body.holder || !body.ad || typeof body.skipped !== "boolean") {
+  if (
+    !body?.id ||
+    !checkImpressionId(body.id) ||
+    !body.holder ||
+    !body.ad ||
+    typeof body.skipped !== "boolean"
+  ) {
     return { ok: false, status: "rejected_sig", reason: "missing_fields" };
   }
   if (!checkTimestampSkew(body.ts)) {
@@ -176,7 +222,6 @@ export async function verifyBeacon(input: VerifyInput): Promise<VerifyResult> {
     if (safeEqualHex(h, holder.api_key_hash) || h === holder.api_key_hash) {
       return { ok: true, auth: "key" };
     }
-    // Also accept HMAC signed with the raw api key
     if (signature) {
       const expected = signPayload(
         {

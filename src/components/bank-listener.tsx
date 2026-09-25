@@ -15,6 +15,7 @@ export function BankListener() {
         source?: string;
         viewer?: string | null;
         holder?: string | null;
+        watchMs?: number | null;
         /** When true, hold.js (or another sender) already POSTed the beacon. */
         beaconed?: boolean;
       };
@@ -35,6 +36,7 @@ export function BankListener() {
           skipped: Boolean(d.skipped),
           viewer: d.viewer ?? useBankStore.getState().viewerId,
           source: d.source || "hold.js",
+          watchMs: d.watchMs ?? null,
         });
       }
     };

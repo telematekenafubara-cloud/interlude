@@ -1,13 +1,18 @@
 import assert from "node:assert/strict";
 import { describe, it, beforeEach } from "node:test";
 import {
+  checkImpressionId,
   checkRateLimits,
   checkTimestampSkew,
+  classifyViewability,
   hashKey,
   markRateAccepted,
   resetRateBuckets,
   safeEqualHex,
   signPayload,
+  softBotCheck,
+  COMPLETE_MIN_WATCH_MS,
+  SKIP_MIN_WATCH_MS,
 } from "./impressions-pure.mjs";
 
 describe("impressions pure helpers", () => {
@@ -73,5 +78,55 @@ describe("impressions pure helpers", () => {
       now,
     });
     assert.ok(hit && hit.startsWith("viewer_rate"));
+  });
+
+  it("classifyViewability: completed requires watch past skip threshold", () => {
+    assert.deepEqual(
+      classifyViewability({ skipped: false, watchMs: COMPLETE_MIN_WATCH_MS }),
+      { ok: true, outcome: "completed" },
+    );
+    assert.deepEqual(
+      classifyViewability({ skipped: false, watchMs: COMPLETE_MIN_WATCH_MS - 1 }),
+      { ok: false, reason: "incomplete_watch" },
+    );
+    assert.deepEqual(classifyViewability({ skipped: false, watchMs: null }), {
+      ok: false,
+      reason: "missing_watch_ms",
+    });
+  });
+
+  it("classifyViewability: explicit skip is skipped; too-fast skip rejected", () => {
+    assert.deepEqual(classifyViewability({ skipped: true, watchMs: 5000 }), {
+      ok: true,
+      outcome: "skipped",
+    });
+    assert.deepEqual(classifyViewability({ skipped: true }), {
+      ok: true,
+      outcome: "skipped",
+    });
+    assert.deepEqual(
+      classifyViewability({ skipped: true, watchMs: SKIP_MIN_WATCH_MS - 1 }),
+      { ok: false, reason: "skip_too_fast" },
+    );
+  });
+
+  it("softBotCheck rejects webdriver / empty / bot UA; allows real browser", () => {
+    assert.equal(softBotCheck({ webdriver: true, userAgent: "Mozilla/5.0" }), "webdriver");
+    assert.equal(softBotCheck({ userAgent: "" }), "empty_ua");
+    assert.equal(softBotCheck({ userAgent: "HeadlessChrome/120" }), "bot_ua");
+    assert.equal(
+      softBotCheck({
+        webdriver: false,
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0",
+      }),
+      null,
+    );
+  });
+
+  it("checkImpressionId enforces stable idempotency key length", () => {
+    assert.equal(checkImpressionId("short"), false);
+    assert.equal(checkImpressionId("12345678"), true);
+    assert.equal(checkImpressionId("a".repeat(129)), false);
   });
 });

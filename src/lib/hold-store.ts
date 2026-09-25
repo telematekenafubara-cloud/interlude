@@ -77,6 +77,7 @@ export const useHoldStore = create<HoldStore>((set) => ({
       skipped,
       viewer: useBankStore.getState().viewerId,
       source,
+      watchMs: attentionMs,
     });
   },
 }));

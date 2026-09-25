@@ -4,7 +4,9 @@
 import { getSql } from "@/lib/db";
 import {
   checkRateLimits,
+  classifyViewability,
   markRateAccepted,
+  softBotCheck,
   verifyBeacon,
   type BeaconBody,
   type ImpressionStatus,
@@ -73,25 +75,37 @@ export async function recordImpression(input: RecordInput): Promise<RecordResult
     status = verify.status;
     rejectReason = verify.reason;
   } else {
-    // Soft bot flag — still store for audit
-    const ua = (input.userAgent ?? "").trim();
-    if (input.webdriver === true || ua.length === 0) {
+    // Soft bot / headless — still store for audit
+    const bot = softBotCheck({
+      userAgent: input.userAgent,
+      webdriver: input.webdriver,
+    });
+    if (bot) {
       status = "rejected_bot";
-      rejectReason = input.webdriver ? "webdriver" : "empty_ua";
+      rejectReason = bot;
     } else {
-      const memRate = checkRateLimits({
-        viewerId: input.viewer,
-        ipHash: input.ipHash,
-        holderId: input.holder,
+      const view = classifyViewability({
+        skipped: input.skipped,
+        watchMs: input.watchMs,
       });
-      if (memRate) {
-        status = "rejected_rate";
-        rejectReason = memRate;
+      if (!view.ok) {
+        status = "rejected_viewability";
+        rejectReason = view.reason;
       } else {
-        const dbRate = await dbRateBackup(input.holder, input.viewer, input.ipHash);
-        if (dbRate) {
+        const memRate = checkRateLimits({
+          viewerId: input.viewer,
+          ipHash: input.ipHash,
+          holderId: input.holder,
+        });
+        if (memRate) {
           status = "rejected_rate";
-          rejectReason = dbRate;
+          rejectReason = memRate;
+        } else {
+          const dbRate = await dbRateBackup(input.holder, input.viewer, input.ipHash);
+          if (dbRate) {
+            status = "rejected_rate";
+            rejectReason = dbRate;
+          }
         }
       }
     }
@@ -118,10 +132,14 @@ export async function recordImpression(input: RecordInput): Promise<RecordResult
   }
 
   try {
+    const watchMs =
+      input.watchMs == null || !Number.isFinite(Number(input.watchMs))
+        ? null
+        : Math.round(Number(input.watchMs));
     await sql.query(
       `insert into impressions
-        (id, holder_id, ad_id, viewer_id, skipped, source, page_origin, user_agent, ip_hash, status, reject_reason)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+        (id, holder_id, ad_id, viewer_id, skipped, source, page_origin, user_agent, ip_hash, status, reject_reason, watch_ms)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
       [
         input.id,
         input.holder,
@@ -134,6 +152,7 @@ export async function recordImpression(input: RecordInput): Promise<RecordResult
         input.ipHash ?? null,
         status,
         rejectReason,
+        watchMs,
       ],
     );
   } catch (err) {

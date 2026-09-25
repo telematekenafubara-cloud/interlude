@@ -13,6 +13,8 @@ export type ImpressionBeacon = {
   pageOrigin?: string;
   ts?: number;
   webdriver?: boolean;
+  /** Watch duration in ms. Required for completed (non-skip) acceptance. */
+  watchMs?: number | null;
 };
 
 export function newImpressionId(): string {
@@ -41,6 +43,10 @@ export function postImpressionBeacon(input: ImpressionBeacon): void {
           typeof navigator !== "undefined" &&
             (navigator as Navigator & { webdriver?: boolean }).webdriver,
         ),
+      watchMs:
+        input.watchMs == null || !Number.isFinite(Number(input.watchMs))
+          ? null
+          : Math.round(Number(input.watchMs)),
     };
     const body = JSON.stringify(beacon);
     const url = `${location.origin}/api/impressions`;
