@@ -222,19 +222,67 @@
       cancelAnimationFrame(raf);
       if (!host._ilReported) {
         host._ilReported = true;
+        var impressionId =
+          crypto && crypto.randomUUID
+            ? crypto.randomUUID()
+            : Date.now() + "-" + Math.random();
         try {
           window.dispatchEvent(
             new CustomEvent("interlude:impression", {
               detail: {
+                id: impressionId,
                 ad: ad.id,
                 skipped: skipped,
                 source: "hold.js",
                 viewer: viewerId,
                 holder: holderId,
+                beaconed: true,
               },
             }),
           );
         } catch (err) {
+          /* ignore */
+        }
+        // Server beacon — fire-and-forget so unload / navigation still counts.
+        try {
+          var beacon = {
+            id: impressionId,
+            holder: holderId || "holdey",
+            ad: ad.id,
+            skipped: skipped,
+            viewer: viewerId,
+            source: "hold.js",
+            pageOrigin: location.origin,
+            ts: Date.now(),
+            webdriver: !!(navigator && navigator.webdriver),
+          };
+          var body = JSON.stringify(beacon);
+          var url = origin() + "/api/impressions";
+          if (navigator.sendBeacon) {
+            try {
+              navigator.sendBeacon(
+                url,
+                new Blob([body], { type: "application/json" }),
+              );
+            } catch (e) {
+              fetch(url, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: body,
+                mode: "cors",
+                keepalive: true,
+              }).catch(function () {});
+            }
+          } else {
+            fetch(url, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: body,
+              mode: "cors",
+              keepalive: true,
+            }).catch(function () {});
+          }
+        } catch (beaconErr) {
           /* ignore */
         }
       }

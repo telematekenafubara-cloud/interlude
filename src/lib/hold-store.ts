@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import type { FormatId } from "@/lib/ads";
 import { useBankStore } from "@/lib/bank-store";
+import {
+  newImpressionId,
+  postImpressionBeacon,
+} from "@/lib/impression-beacon";
 
 type Metrics = {
   holds: number;
@@ -65,5 +69,14 @@ export const useHoldStore = create<HoldStore>((set) => ({
       },
     }));
     useBankStore.getState().credit({ adId, skipped, source });
+    // Holdey React path does not use hold.js — beacon directly so Eng can prove counts.
+    postImpressionBeacon({
+      id: newImpressionId(),
+      holder: "holdey",
+      ad: adId,
+      skipped,
+      viewer: useBankStore.getState().viewerId,
+      source,
+    });
   },
 }));
