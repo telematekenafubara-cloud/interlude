@@ -213,7 +213,7 @@ export async function holderCounts(holderId: string): Promise<HolderCounts> {
           completed: number;
           skipped: number;
           rejected: number;
-        }> `
+        }>`
         select
           count(*) filter (where status = 'accepted')::int as accepted,
           count(*) filter (where status = 'accepted' and skipped = false)::int as completed,
@@ -226,7 +226,7 @@ export async function holderCounts(holderId: string): Promise<HolderCounts> {
           completed: number;
           skipped: number;
           rejected: number;
-        }> `
+        }>`
         select
           count(*) filter (where status = 'accepted')::int as accepted,
           count(*) filter (where status = 'accepted' and skipped = false)::int as completed,
