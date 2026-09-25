@@ -16,6 +16,7 @@ import { Route as FormatsRouteImport } from './routes/formats'
 import { Route as HoldRouteImport } from './routes/hold'
 import { Route as HolderRouteImport } from './routes/holder'
 import { Route as InstallRouteImport } from './routes/install'
+import { Route as OnboardRouteImport } from './routes/onboard'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as ProposalRouteImport } from './routes/proposal'
 import { Route as StudioRouteImport } from './routes/studio'
@@ -57,6 +58,11 @@ const InstallRoute = InstallRouteImport.update({
   path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardRoute = OnboardRouteImport.update({
+  id: '/onboard',
+  path: '/onboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NetworkRoute = NetworkRouteImport.update({
   id: '/network',
   path: '/network',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/hold': typeof HoldRoute
   '/holder': typeof HolderRoute
   '/install': typeof InstallRoute
+  '/onboard': typeof OnboardRoute
   '/network': typeof NetworkRoute
   '/proposal': typeof ProposalRoute
   '/studio': typeof StudioRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/hold': typeof HoldRoute
   '/holder': typeof HolderRoute
   '/install': typeof InstallRoute
+  '/onboard': typeof OnboardRoute
   '/network': typeof NetworkRoute
   '/proposal': typeof ProposalRoute
   '/studio': typeof StudioRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/hold': typeof HoldRoute
   '/holder': typeof HolderRoute
   '/install': typeof InstallRoute
+  '/onboard': typeof OnboardRoute
   '/network': typeof NetworkRoute
   '/proposal': typeof ProposalRoute
   '/studio': typeof StudioRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/hold'
     | '/holder'
     | '/install'
+    | '/onboard'
     | '/network'
     | '/proposal'
     | '/studio'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/hold'
     | '/holder'
     | '/install'
+    | '/onboard'
     | '/network'
     | '/proposal'
     | '/studio'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/hold'
     | '/holder'
     | '/install'
+    | '/onboard'
     | '/network'
     | '/proposal'
     | '/studio'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   HoldRoute: typeof HoldRoute
   HolderRoute: typeof HolderRoute
   InstallRoute: typeof InstallRoute
+  OnboardRoute: typeof OnboardRoute
   NetworkRoute: typeof NetworkRoute
   ProposalRoute: typeof ProposalRoute
   StudioRoute: typeof StudioRoute
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboard': {
+      id: '/onboard'
+      path: '/onboard'
+      fullPath: '/onboard'
+      preLoaderRoute: typeof OnboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/network': {
       id: '/network'
       path: '/network'
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   HoldRoute: HoldRoute,
   HolderRoute: HolderRoute,
   InstallRoute: InstallRoute,
+  OnboardRoute: OnboardRoute,
   NetworkRoute: NetworkRoute,
   ProposalRoute: ProposalRoute,
   StudioRoute: StudioRoute,

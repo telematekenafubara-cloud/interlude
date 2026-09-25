@@ -123,3 +123,101 @@ export async function listHolders(): Promise<
     createdAt: r.created_at,
   }));
 }
+
+
+const RESERVED_HOLDER_IDS = new Set(["holdey", "demo", "interlude", "admin", "api"]);
+
+export function normalizeHolderId(raw: string): string {
+  return raw.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+}
+
+export function normalizeDomains(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  const out: string[] = [];
+  for (const d of input) {
+    if (typeof d !== "string") continue;
+    let host = d.trim().toLowerCase();
+    host = host.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    host = host.split("/")[0] || "";
+    if (!host || host.length > 253) continue;
+    if (!/^[a-z0-9.-]+$/.test(host)) continue;
+    if (!out.includes(host)) out.push(host);
+  }
+  return out.slice(0, 20);
+}
+
+export async function holderExists(id: string): Promise<boolean> {
+  const sql = await getSql();
+  const rows = await sql<{ id: string }>`select id from holders where id = ${id} limit 1`;
+  return Boolean(rows[0]);
+}
+
+export async function getHolderByApiKey(apiKey: string): Promise<{
+  id: string;
+  name: string;
+  apiKeyPrefix: string;
+  domains: string[];
+  status: string;
+} | null> {
+  if (!apiKey || apiKey.length < 8) return null;
+  const sql = await getSql();
+  const h = hashKey(apiKey);
+  const rows = await sql<{
+    id: string;
+    name: string;
+    api_key_prefix: string;
+    domains: string[];
+    status: string;
+  }>`select id, name, api_key_prefix, domains, status from holders where api_key_hash = ${h} limit 1`;
+  const r = rows[0];
+  if (!r || r.status !== "active") return null;
+  return {
+    id: r.id,
+    name: r.name,
+    apiKeyPrefix: r.api_key_prefix,
+    domains: r.domains ?? [],
+    status: r.status,
+  };
+}
+
+/** Insert-only signup. Refuses reserved / existing ids. */
+export async function signupHolder(input: {
+  id: string;
+  name: string;
+  domains?: string[];
+}): Promise<{ id: string; apiKey: string; apiKeyPrefix: string; domains: string[] }> {
+  const id = normalizeHolderId(input.id);
+  if (!id || id.length < 2 || id.length > 64) throw new Error("invalid_holder_id");
+  if (RESERVED_HOLDER_IDS.has(id)) throw new Error("holder_id_reserved");
+  if (await holderExists(id)) throw new Error("holder_id_taken");
+  const domains = normalizeDomains(input.domains ?? []);
+  const apiKey = newApiKey();
+  const sql = await getSql();
+  const hash = hashKey(apiKey);
+  const prefix = apiKey.slice(0, 8);
+  try {
+    await sql.query(
+      `insert into holders (id, name, api_key_hash, api_key_prefix, domains, status)
+       values ($1, $2, $3, $4, $5, 'active')`,
+      [id, input.name.trim() || id, hash, prefix, domains],
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/unique|duplicate/i.test(msg)) throw new Error("holder_id_taken");
+    throw err;
+  }
+  return { id, apiKey, apiKeyPrefix: prefix, domains };
+}
+
+export async function updateHolderDomains(
+  holderId: string,
+  domains: string[],
+): Promise<string[]> {
+  const cleaned = normalizeDomains(domains);
+  const sql = await getSql();
+  await sql.query(`update holders set domains = $1 where id = $2`, [
+    cleaned,
+    holderId,
+  ]);
+  return cleaned;
+}
