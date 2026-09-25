@@ -3,6 +3,20 @@
   var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null;
   function origin(){try{if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin}catch(e){}return location.origin}
   function beacon(p){try{var b=JSON.stringify(p),u=origin()+"/api/impressions";if(navigator.sendBeacon){try{navigator.sendBeacon(u,new Blob([b],{type:"application/json"}));return}catch(e){}}fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:b,mode:"cors",keepalive:true}).catch(function(){})}catch(e){}}
+  /** Ask Interlude which creative to serve (Growth priority / weighted). */
+  function decideAd(opts){
+    opts=opts||{};
+    if(opts.ad) return Promise.resolve(opts.ad);
+    var holder=opts.holder||holderId||"holdey";
+    var mode=opts.mode||"priority";
+    var u=origin()+"/api/decision?holder="+encodeURIComponent(holder)+"&mode="+encodeURIComponent(mode);
+    return fetch(u,{method:"GET",mode:"cors",credentials:"omit"}).then(function(r){
+      if(!r.ok) throw new Error("decision "+r.status);
+      return r.json();
+    }).then(function(j){
+      return (j&&j.ok&&j.adId)?j.adId:"northline";
+    }).catch(function(){return "northline"});
+  }
   function play(target,opts){
     opts=opts||{};
     var el=typeof target==="string"?document.querySelector(target):target;
@@ -31,24 +45,26 @@
       if(host.parentNode) host.parentNode.removeChild(host);
       el.style.position=prevPos; el.style.minHeight=prevMin;
     }
-    return {started:started,minHold:opts.minMs||SPOT,get skipped(){return skipped},untilSkipped:function(){if(skipped)return Promise.resolve();return new Promise(function(r){waiters.push(r)})},destroy:destroy};
+    return {started:started,minHold:opts.minMs||SPOT,get skipped(){return skipped},get ad(){return ad},untilSkipped:function(){if(skipped)return Promise.resolve();return new Promise(function(r){waiters.push(r)})},destroy:destroy,_setAd:function(a){ad=a||ad}};
   }
   function whileWaiting(target,work,opts){
     opts=opts||{};
     var workP=Promise.resolve().then(work), done=false,value,err;
     workP.then(function(v){done=true;value=v},function(e){done=true;err=e});
     function spot(){
-      var ctl=play(target,opts);
-      return Promise.race([
-        ctl.untilSkipped().then(function(){return "skip"}),
-        new Promise(function(r){setTimeout(r,ctl.minHold)}).then(function(){return "end"})
-      ]).then(function(why){
-        ctl.destroy();
-        if(why==="skip"||done) return workP;
-        return spot();
+      return decideAd(opts).then(function(adId){
+        var ctl=play(target,Object.assign({},opts,{ad:adId}));
+        return Promise.race([
+          ctl.untilSkipped().then(function(){return "skip"}),
+          new Promise(function(r){setTimeout(r,ctl.minHold)}).then(function(){return "end"})
+        ]).then(function(why){
+          ctl.destroy();
+          if(why==="skip"||done) return workP;
+          return spot();
+        });
       });
     }
     return spot().then(function(){if(err)throw err;return value});
   }
-  g.Interlude={play:play,whileWaiting:whileWaiting,identify:function(id){viewerId=id||null},holder:function(id){holderId=id||null},SKIP_AFTER_MS:SKIP_AFTER,SPOT_MS:SPOT,MIN_HOLD_MS:SPOT};
+  g.Interlude={play:play,whileWaiting:whileWaiting,decideAd:decideAd,identify:function(id){viewerId=id||null},holder:function(id){holderId=id||null},SKIP_AFTER_MS:SKIP_AFTER,SPOT_MS:SPOT,MIN_HOLD_MS:SPOT};
 })(typeof window!=="undefined"?window:this);
