@@ -46,16 +46,12 @@ describe("ad decision weights", () => {
       if (weightedPick(items, i / N) === "g") g += 1;
     }
     const share = g / N;
-    // Expect ≈ 7/8 = 0.875; allow monte-carlo slack
     assert.ok(share > 0.82 && share < 0.92, `share=${share}`);
   });
 
   it("priority mode: Growth pool wins whenever Growth is eligible", () => {
     for (let i = 0; i < 20; i++) {
-      const d = decidePriority(
-        eligibleCampaigns(CAMPAIGNS),
-        i / 20,
-      );
+      const d = decidePriority(eligibleCampaigns(CAMPAIGNS), i / 20);
       assert.equal(d.tier, "growth");
       assert.ok(["northline", "solace"].includes(d.adId));
     }
