@@ -6,7 +6,7 @@ function adminOk(event: { req: { headers: Headers } }): boolean {
   const token = process.env.INTERLUDE_ADMIN_TOKEN;
   if (!token) return false;
   const auth = event.req.headers.get("authorization") || "";
-  const m = /^Bearer\\s+(.+)$/i.exec(auth);
+  const m = /^Bearer\s+(.+)$/i.exec(auth);
   return Boolean(m && m[1] === token);
 }
 
