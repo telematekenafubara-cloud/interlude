@@ -12,6 +12,8 @@ export const HOLDER_SHARE = 0.35;
 export const INTERLUDE_SHARE = 0.25;
 export const PAYOUT_FLOOR = 25;
 export const HOLDER_PAYOUT_FLOOR = 100;
+/** Server Interlude Bank cash-out floor (NGN). See bank-math / Accountant lock. */
+export const MIN_WITHDRAWAL_NGN = 2000;
 
 export type Settlement = {
   advertiser: number;
