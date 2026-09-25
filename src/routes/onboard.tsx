@@ -175,8 +175,9 @@ function SignupForm({
         {busy ? "Creating…" : "Create Holder"}
       </Button>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Holder Bank share is fixed at {shareLabel(HOLDER_SHARE)} (35%). No Bank
-        credits or payouts in this step — identity only.
+        Holder Bank share is fixed at {shareLabel(HOLDER_SHARE)} (35%). After
+        signup, open Bank for KYC, accrued ₦ liability, and Paystack TEST
+        withdraw (min ₦2,000).
       </p>
     </form>
   );
@@ -218,8 +219,9 @@ function SignedUpCard({
           Holder Bank · {shareLabel(HOLDER_SHARE)}
         </p>
         <p className="mt-1 text-muted-foreground">
-          After Interlude holds payment, 35% is what is left for you. Open Bank
-          to confirm the dashboard.
+          After Interlude holds payment, 35% is what is left for you as a
+          liability until Paystack TEST cash-out. Open Bank for balance, KYC,
+          and withdraw (≥ ₦2,000).
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
