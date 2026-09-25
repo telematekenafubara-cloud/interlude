@@ -5,11 +5,11 @@ import { getSql } from "@/lib/db";
 import {
   checkRateLimits,
   markRateAccepted,
-  seedHolders,
   verifyBeacon,
   type BeaconBody,
   type ImpressionStatus,
 } from "./impressions-core.server";
+import { seedHolders } from "./impressions-holders.server";
 
 const RATE_VIEWER = 60;
 const RATE_IP = 120;
