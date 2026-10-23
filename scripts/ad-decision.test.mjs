@@ -94,3 +94,41 @@ describe("ad decision weights", () => {
     assert.equal(d.reason, "paid");
   });
 });
+
+describe("Holder category exclusions", () => {
+  const MIX = [
+    { id: "bet", adId: "bet", tier: "growth", category: "sportsbook", active: true },
+    { id: "beer", adId: "beer", tier: "growth", category: "alcohol", active: true },
+    { id: "s1", adId: "harbor", tier: "starter", category: "lodging", active: true },
+  ];
+
+  it("blocked categories are filtered out of eligibility", () => {
+    const e = eligibleCampaigns(MIX, { blockedCategories: ["sportsbook", "alcohol"] });
+    assert.deepEqual(e.map((c) => c.id), ["s1"]);
+  });
+
+  it("blocking is case-insensitive", () => {
+    const e = eligibleCampaigns(MIX, { blockedCategories: ["SportsBook"] });
+    assert.ok(!e.find((c) => c.id === "bet"));
+  });
+
+  it("decideHold never serves a blocked category (priority + weighted)", () => {
+    for (const mode of ["priority", "weighted"]) {
+      for (let i = 0; i < 50; i++) {
+        const d = decideHold(MIX, { mode, rand: i / 50, blockedCategories: ["sportsbook", "alcohol"] });
+        assert.equal(d.adId, "harbor");
+        assert.equal(d.tier, "starter");
+      }
+    }
+  });
+
+  it("all paid lines blocked → house fallback", () => {
+    const d = decideHold(MIX, { blockedCategories: ["sportsbook", "alcohol", "lodging"] });
+    assert.equal(d.reason, "house_fallback");
+  });
+
+  it("no blocks → Growth sportsbook allowed (sportsbooks are allowed by default)", () => {
+    const d = decideHold(MIX, { mode: "priority", rand: 0.01 });
+    assert.equal(d.tier, "growth");
+  });
+});

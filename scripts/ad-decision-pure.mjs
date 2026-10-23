@@ -38,12 +38,16 @@ export function weightForTier(tier) {
 
 /**
  * @param {Campaign[]} campaigns
- * @param {{ categories?: string[] | null }} [opts]
+ * @param {{ categories?: string[] | null; blockedCategories?: string[] | null }} [opts]
  * @returns {Campaign[]}
  */
 export function eligibleCampaigns(campaigns, opts = {}) {
   const allow = opts.categories;
+  const blocked = (opts.blockedCategories || [])
+    .map((x) => String(x).trim().toLowerCase())
+    .filter(Boolean);
   return (campaigns || []).filter((c) => {
+    if (c && blocked.length && c.category && blocked.includes(String(c.category).toLowerCase())) return false;
     if (!c || c.active === false) return false;
     if (c.tier === "house") return false;
     if (!c.adId || !c.id) return false;
@@ -125,11 +129,11 @@ export function decideWeighted(eligible, rand = Math.random()) {
 
 /**
  * @param {Campaign[]} campaigns
- * @param {{ mode?: "priority" | "weighted", categories?: string[] | null, rand?: number, houseAdId?: string }} [opts]
+ * @param {{ mode?: "priority" | "weighted", categories?: string[] | null, blockedCategories?: string[] | null, rand?: number, houseAdId?: string }} [opts]
  */
 export function decideHold(campaigns, opts = {}) {
   const mode = opts.mode === "weighted" ? "weighted" : "priority";
-  const eligible = eligibleCampaigns(campaigns, { categories: opts.categories });
+  const eligible = eligibleCampaigns(campaigns, { categories: opts.categories, blockedCategories: opts.blockedCategories });
   const rand = opts.rand ?? Math.random();
   const houseAdId = opts.houseAdId || HOUSE_AD_ID;
 

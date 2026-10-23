@@ -1,6 +1,7 @@
 (function(g){
   "use strict";
-  var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null;
+  var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null,lastCreative=null;
+  function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
   function origin(){try{if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin}catch(e){}return location.origin}
   function beacon(p){try{var b=JSON.stringify(p),u=origin()+"/api/impressions";if(navigator.sendBeacon){try{navigator.sendBeacon(u,new Blob([b],{type:"application/json"}));return}catch(e){}}fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:b,mode:"cors",keepalive:true}).catch(function(){})}catch(e){}}
   /** Ask Interlude which creative to serve (Growth priority / weighted). */
@@ -14,21 +15,21 @@
       if(!r.ok) throw new Error("decision "+r.status);
       return r.json();
     }).then(function(j){
-      return (j&&j.ok&&j.adId)?j.adId:"northline";
-    }).catch(function(){return "northline"});
+      lastCreative=(j&&j.creative)||null;return (j&&j.ok&&j.adId)?j.adId:"northline";
+    }).catch(function(){lastCreative=null;return "northline"});
   }
   function play(target,opts){
     opts=opts||{};
     var el=typeof target==="string"?document.querySelector(target):target;
     if(!el) throw new Error("Interlude: missing target element");
-    var ad=opts.ad||"northline";
+    var ad=opts.ad||"northline";var cr=opts.creative||(opts.ad&&lastCreative&&!opts._noCreative?lastCreative:null);
     var started=performance.now(),skipped=false,waiters=[];
     var prevPos=el.style.position,prevMin=el.style.minHeight;
     if(getComputedStyle(el).position==="static") el.style.position="relative";
     var host=document.createElement("div");
     host.setAttribute("data-interlude-hold","");
     host.style.cssText="position:absolute;inset:0;z-index:20;background:#0b0b0a;color:#f4f1ea;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;font-family:system-ui,sans-serif";
-    host.innerHTML="<div style=\"font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.75\">Ad</div><div style=\"font-family:Georgia,serif;font-size:28px;margin-top:8px\">Hold</div><div style=\"margin-top:6px;opacity:.85;font-size:14px\">Watch or skip — delivery is metered.</div><button type=\"button\" data-il-skip style=\"display:none;margin-top:12px;align-self:flex-end;width:44px;height:44px;border:0;border-radius:999px;background:rgba(244,241,234,.15);color:#f4f1ea;font-size:18px;cursor:pointer\">→</button>";
+    host.innerHTML="<div style=\"font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.75\">Ad</div><div style=\"font-family:Georgia,serif;font-size:28px;margin-top:8px\">"+(cr?esc(cr.headline):"Hold")+"</div><div style=\"margin-top:6px;opacity:.85;font-size:14px\">"+(cr?esc(cr.body||""):"Watch or skip — delivery is metered.")+"</div>"+(cr&&cr.clickUrl&&/^https?:/i.test(cr.clickUrl)?"<a href=\""+esc(cr.clickUrl)+"\" target=\"_blank\" rel=\"noopener sponsored\" style=\"margin-top:10px;color:#f4f1ea;font-size:13px\">"+esc(cr.cta||"Learn more")+" →</a>":"")+"<button type=\"button\" data-il-skip style=\"display:none;margin-top:12px;align-self:flex-end;width:44px;height:44px;border:0;border-radius:999px;background:rgba(244,241,234,.15);color:#f4f1ea;font-size:18px;cursor:pointer\">→</button>";
     el.appendChild(host);
     var skipBtn=host.querySelector("[data-il-skip]");
     skipBtn.onclick=function(){skipped=true;waiters.splice(0).forEach(function(fn){fn()})};

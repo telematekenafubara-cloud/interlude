@@ -44,6 +44,7 @@ export async function signupHolderClient(input: {
   id: string;
   name: string;
   domains?: string[];
+  blockedCategories?: string[];
 }): Promise<
   | { ok: true; session: HolderSession; holderShare: number }
   | { ok: false; error: string }

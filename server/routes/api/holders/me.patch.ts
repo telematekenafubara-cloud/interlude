@@ -3,10 +3,11 @@ import {
   getHolderByApiKey,
   seedHolders,
   updateHolderDomains,
+  updateHolderBlockedCategories,
 } from "../../../../src/lib/impressions.server";
 import { corsJson } from "../../../lib/cors";
 
-/** PATCH /api/holders/me — update domain allowlist with Holder API key. */
+/** PATCH /api/holders/me — update domain allowlist and/or blockedCategories with Holder API key. */
 export default defineHandler(async (event) => {
   const key =
     event.req.headers.get("x-interlude-key") ||
@@ -19,7 +20,7 @@ export default defineHandler(async (event) => {
     return corsJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
 
-  let body: { domains?: string[] };
+  let body: { domains?: string[]; blockedCategories?: string[] };
   try {
     body = (await event.req.json()) as typeof body;
   } catch {
@@ -32,11 +33,19 @@ export default defineHandler(async (event) => {
     if (!holder) {
       return corsJson({ ok: false, error: "unauthorized" }, { status: 401 });
     }
-    const domains = await updateHolderDomains(holder.id, body.domains ?? []);
+    const domains =
+      body.domains !== undefined
+        ? await updateHolderDomains(holder.id, body.domains ?? [])
+        : holder.domains;
+    const blockedCategories =
+      body.blockedCategories !== undefined
+        ? await updateHolderBlockedCategories(holder.id, body.blockedCategories)
+        : holder.blockedCategories;
     return corsJson({
       ok: true,
       id: holder.id,
       domains,
+      blockedCategories,
       holderShare: 0.35,
     });
   } catch (err) {
