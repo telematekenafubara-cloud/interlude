@@ -4,6 +4,7 @@
 import { randomBytes } from "node:crypto";
 import { getSql } from "@/lib/db";
 import { hashKey } from "./impressions-core.server";
+import { normalizeCategoryList } from "./ad-categories";
 
 const DEV_HOLDEY_KEY = "il_holdey_dev_key_do_not_use_in_prod";
 const DEV_DEMO_KEY = "il_demo_dev_key_do_not_use_in_prod";
@@ -157,6 +158,7 @@ export async function getHolderByApiKey(apiKey: string): Promise<{
   name: string;
   apiKeyPrefix: string;
   domains: string[];
+  blockedCategories: string[];
   status: string;
 } | null> {
   if (!apiKey || apiKey.length < 8) return null;
@@ -167,8 +169,9 @@ export async function getHolderByApiKey(apiKey: string): Promise<{
     name: string;
     api_key_prefix: string;
     domains: string[];
+    blocked_categories: string[] | null;
     status: string;
-  }>`select id, name, api_key_prefix, domains, status from holders where api_key_hash = ${h} limit 1`;
+  }>`select id, name, api_key_prefix, domains, blocked_categories, status from holders where api_key_hash = ${h} limit 1`;
   const r = rows[0];
   if (!r || r.status !== "active") return null;
   return {
@@ -176,6 +179,7 @@ export async function getHolderByApiKey(apiKey: string): Promise<{
     name: r.name,
     apiKeyPrefix: r.api_key_prefix,
     domains: r.domains ?? [],
+    blockedCategories: r.blocked_categories ?? [],
     status: r.status,
   };
 }
@@ -185,28 +189,36 @@ export async function signupHolder(input: {
   id: string;
   name: string;
   domains?: string[];
-}): Promise<{ id: string; apiKey: string; apiKeyPrefix: string; domains: string[] }> {
+  blockedCategories?: unknown;
+}): Promise<{
+  id: string;
+  apiKey: string;
+  apiKeyPrefix: string;
+  domains: string[];
+  blockedCategories: string[];
+}> {
   const id = normalizeHolderId(input.id);
   if (!id || id.length < 2 || id.length > 64) throw new Error("invalid_holder_id");
   if (RESERVED_HOLDER_IDS.has(id)) throw new Error("holder_id_reserved");
   if (await holderExists(id)) throw new Error("holder_id_taken");
   const domains = normalizeDomains(input.domains ?? []);
+  const blockedCategories = normalizeCategoryList(input.blockedCategories);
   const apiKey = newApiKey();
   const sql = await getSql();
   const hash = hashKey(apiKey);
   const prefix = apiKey.slice(0, 8);
   try {
     await sql.query(
-      `insert into holders (id, name, api_key_hash, api_key_prefix, domains, status)
-       values ($1, $2, $3, $4, $5, 'active')`,
-      [id, input.name.trim() || id, hash, prefix, domains],
+      `insert into holders (id, name, api_key_hash, api_key_prefix, domains, blocked_categories, status)
+       values ($1, $2, $3, $4, $5, $6, 'active')`,
+      [id, input.name.trim() || id, hash, prefix, domains, blockedCategories],
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (/unique|duplicate/i.test(msg)) throw new Error("holder_id_taken");
     throw err;
   }
-  return { id, apiKey, apiKeyPrefix: prefix, domains };
+  return { id, apiKey, apiKeyPrefix: prefix, domains, blockedCategories };
 }
 
 export async function updateHolderDomains(
@@ -216,6 +228,19 @@ export async function updateHolderDomains(
   const cleaned = normalizeDomains(domains);
   const sql = await getSql();
   await sql.query(`update holders set domains = $1 where id = $2`, [
+    cleaned,
+    holderId,
+  ]);
+  return cleaned;
+}
+
+export async function updateHolderBlockedCategories(
+  holderId: string,
+  input: unknown,
+): Promise<string[]> {
+  const cleaned = normalizeCategoryList(input);
+  const sql = await getSql();
+  await sql.query(`update holders set blocked_categories = $1 where id = $2`, [
     cleaned,
     holderId,
   ]);

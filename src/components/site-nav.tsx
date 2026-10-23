@@ -12,7 +12,7 @@ const PAGES = [
   { to: "/bank", label: "Bank" },
   { to: "/onboard", label: "Onboard" },
   { to: "/studio", label: "Studio" },
-  { to: "/proposal", label: "Proposal" },
+  
   { to: "/ask", label: "Ask Holdey" },
 ] as const;
 

@@ -33,7 +33,7 @@ export default defineHandler(async (event) => {
     return corsJson({ ok: false, error: "rate_limited" }, { status: 429 });
   }
 
-  let body: { id?: string; name?: string; domains?: string[] };
+  let body: { id?: string; name?: string; domains?: string[]; blockedCategories?: string[] };
   try {
     body = (await event.req.json()) as typeof body;
   } catch {
@@ -53,6 +53,7 @@ export default defineHandler(async (event) => {
       id: body.id,
       name: body.name,
       domains: body.domains,
+      blockedCategories: body.blockedCategories,
     });
     return corsJson({
       ok: true,
@@ -60,6 +61,7 @@ export default defineHandler(async (event) => {
       apiKey: created.apiKey,
       apiKeyPrefix: created.apiKeyPrefix,
       domains: created.domains,
+      blockedCategories: created.blockedCategories,
       holderShare: 0.35,
       waiterShare: 0.4,
       interludeShare: 0.25,

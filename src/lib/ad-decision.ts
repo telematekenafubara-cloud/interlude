@@ -28,6 +28,14 @@ export type Campaign = {
   /** Optional category for allowlist stubs. */
   category?: string;
   advertiserName?: string;
+  /** Real advertiser creative (DB campaigns). */
+  creative?: {
+    headline: string;
+    body?: string;
+    cta?: string;
+    clickUrl?: string | null;
+    imageUrl?: string | null;
+  };
 };
 
 export type DecisionMode = "priority" | "weighted";
@@ -52,10 +60,14 @@ export function weightForTier(tier: CampaignTier): number {
 
 export function eligibleCampaigns(
   campaigns: Campaign[],
-  opts: { categories?: string[] | null } = {},
+  opts: { categories?: string[] | null; blockedCategories?: string[] | null } = {},
 ): Campaign[] {
   const allow = opts.categories;
+  const blocked = (opts.blockedCategories || [])
+    .map((x) => String(x).trim().toLowerCase())
+    .filter(Boolean);
   return (campaigns || []).filter((c) => {
+    if (c && blocked.length && c.category && blocked.includes(String(c.category).toLowerCase())) return false;
     if (!c || c.active === false) return false;
     if (c.tier === "house") return false;
     if (!c.adId || !c.id) return false;
@@ -109,6 +121,7 @@ export function decideHold(
   opts: {
     mode?: DecisionMode;
     categories?: string[] | null;
+    blockedCategories?: string[] | null;
     rand?: number;
     houseAdId?: string;
   } = {},
@@ -116,6 +129,7 @@ export function decideHold(
   const mode: DecisionMode = opts.mode === "weighted" ? "weighted" : "priority";
   const eligible = eligibleCampaigns(campaigns, {
     categories: opts.categories,
+    blockedCategories: opts.blockedCategories,
   });
   const rand = opts.rand ?? Math.random();
   const houseAdId = opts.houseAdId || HOUSE_AD_ID;

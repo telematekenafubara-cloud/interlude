@@ -1,7 +1,7 @@
 /** Shared CORS headers for public impression / holder APIs. */
 export const IMPRESSION_CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "POST, GET, OPTIONS",
+  "access-control-allow-methods": "POST, GET, PATCH, OPTIONS",
   "access-control-allow-headers":
     "content-type, x-interlude-key, x-interlude-sig, authorization",
   "access-control-max-age": "86400",

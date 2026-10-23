@@ -61,3 +61,21 @@ export function loadCampaigns(): Campaign[] {
   }
   return DEMO_CAMPAIGNS;
 }
+
+/**
+ * Seeded demo lines + real paid campaigns from the advertiser console.
+ * Once any real paid campaign is active, demo seed lines are dropped so paying
+ * advertisers only compete with each other (set INTERLUDE_KEEP_DEMO_CAMPAIGNS=1 to keep them).
+ */
+export async function loadAllCampaigns(): Promise<Campaign[]> {
+  let real: Campaign[] = [];
+  try {
+    const { loadActiveDbCampaigns } = await import("@/lib/advertisers.server");
+    real = await loadActiveDbCampaigns();
+  } catch (err) {
+    console.error("[ad-campaigns] db campaigns unavailable", err);
+  }
+  if (!real.length) return loadCampaigns();
+  if (process.env.INTERLUDE_KEEP_DEMO_CAMPAIGNS === "1") return [...loadCampaigns(), ...real];
+  return real;
+}

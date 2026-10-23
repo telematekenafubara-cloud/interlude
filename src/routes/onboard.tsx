@@ -10,6 +10,7 @@ import {
 } from "@/lib/holder-session";
 import { HOLDER_SHARE, shareLabel } from "@/lib/rates";
 import { cn } from "@/lib/utils";
+import { AD_CATEGORIES } from "@/lib/ad-categories";
 
 export const Route = createFileRoute("/onboard")({ component: OnboardPage });
 
@@ -92,6 +93,7 @@ function SignupForm({
   const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [domainsRaw, setDomainsRaw] = useState("");
+  const [blocked, setBlocked] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,7 +105,7 @@ function SignupForm({
       .split(/[\s,]+/)
       .map((d) => d.trim())
       .filter(Boolean);
-    const res = await signupHolderClient({ id, name, domains });
+    const res = await signupHolderClient({ id, name, domains, blockedCategories: blocked });
     setBusy(false);
     if (!res.ok) {
       setError(
@@ -166,6 +168,13 @@ function SignupForm({
           placeholder="app.example.com, localhost"
         />
       </label>
+      <div className="text-sm">
+        <span className="font-medium">Blocked ad categories</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">
+          Holds from these categories never play on your product. Change any time below.
+        </span>
+        <CategoryPicker value={blocked} onChange={setBlocked} />
+      </div>
       {error ? (
         <p className="text-sm text-red-400" role="alert">
           {error}
@@ -214,6 +223,7 @@ function SignedUpCard({
             : "None yet — add them on Bank → Holder."}
         </p>
       </div>
+      <BlockedSettings apiKey={session.apiKey} />
       <div className="rounded-lg bg-muted px-4 py-3 text-sm">
         <p className="font-medium text-foreground">
           Holder Bank · {shareLabel(HOLDER_SHARE)}
@@ -290,6 +300,73 @@ function CopyRow({
         )}
         {copied ? "Copied" : "Copy"}
       </button>
+    </div>
+  );
+}
+
+export function CategoryPicker({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {AD_CATEGORIES.map((c) => {
+        const on = value.includes(c);
+        return (
+          <button
+            key={c}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(on ? value.filter((x) => x !== c) : [...value, c])}
+            className={cn(
+              "h-8 rounded-full border px-3 text-xs",
+              on
+                ? "border-red-400/60 bg-red-400/10 text-red-300 line-through"
+                : "border-border text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {c}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function BlockedSettings({ apiKey }: { apiKey: string }) {
+  const [blocked, setBlocked] = useState<string[] | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/api/holders/me", { headers: { authorization: `Bearer ${apiKey}` } })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; holder?: { blockedCategories?: string[] } }) =>
+        setBlocked(j.holder?.blockedCategories ?? []),
+      )
+      .catch(() => setBlocked([]));
+  }, [apiKey]);
+  async function save() {
+    setStatus("Saving…");
+    const r = await fetch("/api/holders/me", {
+      method: "PATCH",
+      headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+      body: JSON.stringify({ blockedCategories: blocked ?? [] }),
+    });
+    setStatus(r.ok ? "Saved — /api/decision now skips these." : "Save failed.");
+  }
+  if (blocked === null) return null;
+  return (
+    <div className="rounded-lg bg-muted px-4 py-3 text-sm">
+      <p className="font-medium text-foreground">Blocked ad categories</p>
+      <CategoryPicker value={blocked} onChange={setBlocked} />
+      <div className="mt-3 flex items-center gap-3">
+        <Button size="sm" type="button" onClick={save}>
+          Save
+        </Button>
+        {status ? <span className="text-xs text-muted-foreground">{status}</span> : null}
+      </div>
     </div>
   );
 }
