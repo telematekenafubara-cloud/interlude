@@ -27,7 +27,7 @@ export function parseHold(text: string): HoldDraft | null {
   let name = grab("BRAND") || grab("NAME");
   let tagline = grab("TAGLINE");
   let cta = grab("CTA");
-  let category = grab("CATEGORY") || "Brand";
+  const category = grab("CATEGORY") || "Brand";
   let body = grab("BODY") || tagline;
   if (!name || !tagline || !cta) {
     const lines = text
