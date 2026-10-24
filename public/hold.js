@@ -2,8 +2,8 @@
   "use strict";
   var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null,lastCreative=null;
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
-  function origin(){try{if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin}catch(e){}return location.origin}
-  function beacon(p){try{var b=JSON.stringify(p),u=origin()+"/api/impressions";if(navigator.sendBeacon){try{navigator.sendBeacon(u,new Blob([b],{type:"application/json"}));return}catch(e){}}fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:b,mode:"cors",keepalive:true}).catch(function(){})}catch(e){}}
+  function origin(){try{if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin}catch(e){/* best-effort */}return location.origin}
+  function beacon(p){try{var b=JSON.stringify(p),u=origin()+"/api/impressions";if(navigator.sendBeacon){try{navigator.sendBeacon(u,new Blob([b],{type:"application/json"}));return}catch(e){/* best-effort */}}fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:b,mode:"cors",keepalive:true}).catch(function(){})}catch(e){/* best-effort */}}
   /** Ask Interlude which creative to serve (Growth priority / weighted). */
   function decideAd(opts){
     opts=opts||{};
@@ -40,7 +40,7 @@
         host._ilReported=true;
         var watchMs=Math.max(0,Math.round(performance.now()-started));
         var id=(crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+"-"+Math.random();
-        try{window.dispatchEvent(new CustomEvent("interlude:impression",{detail:{id:id,ad:ad,skipped:skipped,source:"hold.js",viewer:viewerId,holder:holderId,watchMs:watchMs,beaconed:true}}))}catch(e){}
+        try{window.dispatchEvent(new CustomEvent("interlude:impression",{detail:{id:id,ad:ad,skipped:skipped,source:"hold.js",viewer:viewerId,holder:holderId,watchMs:watchMs,beaconed:true}}))}catch(e){/* best-effort */}
         beacon({id:id,holder:holderId||"holdey",ad:ad,skipped:skipped,viewer:viewerId,source:"hold.js",pageOrigin:location.origin,ts:Date.now(),webdriver:!!(navigator&&navigator.webdriver),watchMs:watchMs});
       }
       if(host.parentNode) host.parentNode.removeChild(host);

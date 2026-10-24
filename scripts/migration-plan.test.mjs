@@ -58,7 +58,15 @@ test("non-.sql entries are dropped (readdir also yields the auth/ directory)", (
 
 test("the auth schema ships outside the globbed directory", () => {
   const migrationsDir = join(projectRoot(), "migrations");
-  assert.deepEqual(pendingMigrations(readdirSync(migrationsDir), []), []);
+  // The app ships its own top-level migrations, so the plan is not empty; what
+  // matters is that only top-level .sql files are planned and the auth schema
+  // under migrations/auth/ is never picked up by the (non-recursive) glob.
+  const entries = readdirSync(migrationsDir);
+  const planned = pendingMigrations(entries, []).map((m) => m.name);
+  assert.deepEqual(planned, entries.filter((f) => f.endsWith(".sql")).sort());
+  if (authSchemaCopy(projectRoot()) === null) {
+    assert.ok(!planned.includes(AUTH_MIGRATION), "auth schema leaked into the plan");
+  }
   assert.ok(readdirSync(join(migrationsDir, "auth")).includes("0001_auth.sql"));
 });
 
