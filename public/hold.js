@@ -1,8 +1,25 @@
 (function(g){
   "use strict";
-  var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null,lastCreative=null;
+  var SKIP_AFTER=5000,SPOT=8000,viewerId=null,holderId=null,lastCreative=null,sdkOrigin=null;
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
-  function origin(){try{if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin}catch(e){/* best-effort */}return location.origin}
+  /** Resolve Interlude API origin. Async injected scripts often have null currentScript. */
+  function resolveSdkOrigin(){
+    try{
+      if(document.currentScript&&document.currentScript.src)return new URL(document.currentScript.src).origin;
+    }catch(e){/* best-effort */}
+    try{
+      var s=document.querySelector("script[data-interlude='hold'][src],script[src*='/hold.js']");
+      if(s&&s.src)return new URL(s.src).origin;
+    }catch(e){/* best-effort */}
+    return null;
+  }
+  sdkOrigin=resolveSdkOrigin();
+  function origin(){
+    if(sdkOrigin)return sdkOrigin;
+    sdkOrigin=resolveSdkOrigin();
+    if(sdkOrigin)return sdkOrigin;
+    return location.origin;
+  }
   function beacon(p){try{var b=JSON.stringify(p),u=origin()+"/api/impressions";if(navigator.sendBeacon){try{navigator.sendBeacon(u,new Blob([b],{type:"application/json"}));return}catch(e){/* best-effort */}}fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:b,mode:"cors",keepalive:true}).catch(function(){})}catch(e){/* best-effort */}}
   /** Ask Interlude which creative to serve (Growth priority / weighted). */
   function decideAd(opts){
@@ -24,12 +41,16 @@
     if(!el) throw new Error("Interlude: missing target element");
     var ad=opts.ad||"northline";var cr=opts.creative||(opts.ad&&lastCreative&&!opts._noCreative?lastCreative:null);
     var started=performance.now(),skipped=false,waiters=[];
-    var prevPos=el.style.position,prevMin=el.style.minHeight;
+    var prevPos=el.style.position,prevMin=el.style.minHeight,prevOverflow=el.style.overflow;
     if(getComputedStyle(el).position==="static") el.style.position="relative";
+    // Expand tiny reply wells (e.g. Telz bubble) so the Hold is visible
+    var needMin=Math.max(160,opts.minHeight||160);
+    if((el.offsetHeight||0)<needMin) el.style.minHeight=needMin+"px";
+    el.style.overflow="visible";
     var host=document.createElement("div");
     host.setAttribute("data-interlude-hold","");
-    host.style.cssText="position:absolute;inset:0;z-index:20;background:#0b0b0a;color:#f4f1ea;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;font-family:system-ui,sans-serif";
-    host.innerHTML="<div style=\"font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.75\">Ad</div><div style=\"font-family:Georgia,serif;font-size:28px;margin-top:8px\">"+(cr?esc(cr.headline):"Hold")+"</div><div style=\"margin-top:6px;opacity:.85;font-size:14px\">"+(cr?esc(cr.body||""):"Watch or skip — delivery is metered.")+"</div>"+(cr&&cr.clickUrl&&/^https?:/i.test(cr.clickUrl)?"<a href=\""+esc(cr.clickUrl)+"\" target=\"_blank\" rel=\"noopener sponsored\" style=\"margin-top:10px;color:#f4f1ea;font-size:13px\">"+esc(cr.cta||"Learn more")+" →</a>":"")+"<button type=\"button\" data-il-skip style=\"display:none;margin-top:12px;align-self:flex-end;width:44px;height:44px;border:0;border-radius:999px;background:rgba(244,241,234,.15);color:#f4f1ea;font-size:18px;cursor:pointer\">→</button>";
+    host.style.cssText="position:absolute;inset:0;z-index:50;background:#0b0b0a;color:#f4f1ea;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;font-family:system-ui,sans-serif;box-sizing:border-box;border:1px solid rgba(244,241,234,.35);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.55);min-height:140px";
+    host.innerHTML="<div style=\"font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.75\">Ad</div><div style=\"font-family:Georgia,serif;font-size:20px;line-height:1.2;margin-top:6px\">"+(cr?esc(cr.headline):"Hold")+"</div><div style=\"margin-top:6px;opacity:.85;font-size:13px;line-height:1.35\">"+(cr?esc(cr.body||""):"Watch or skip — delivery is metered.")+"</div>"+(cr&&cr.clickUrl&&/^https?:/i.test(cr.clickUrl)?"<a href=\""+esc(cr.clickUrl)+"\" target=\"_blank\" rel=\"noopener sponsored\" style=\"margin-top:8px;color:#f4f1ea;font-size:12px\">"+esc(cr.cta||"Learn more")+" →</a>":"")+"<button type=\"button\" data-il-skip style=\"display:none;margin-top:10px;align-self:flex-end;width:44px;height:44px;border:0;border-radius:999px;background:rgba(244,241,234,.15);color:#f4f1ea;font-size:18px;cursor:pointer\">→</button>";
     el.appendChild(host);
     var skipBtn=host.querySelector("[data-il-skip]");
     skipBtn.onclick=function(){skipped=true;waiters.splice(0).forEach(function(fn){fn()})};
@@ -44,7 +65,7 @@
         beacon({id:id,holder:holderId||"holdey",ad:ad,skipped:skipped,viewer:viewerId,source:"hold.js",pageOrigin:location.origin,ts:Date.now(),webdriver:!!(navigator&&navigator.webdriver),watchMs:watchMs});
       }
       if(host.parentNode) host.parentNode.removeChild(host);
-      el.style.position=prevPos; el.style.minHeight=prevMin;
+      el.style.position=prevPos; el.style.minHeight=prevMin; el.style.overflow=prevOverflow;
     }
     return {started:started,minHold:opts.minMs||SPOT,get skipped(){return skipped},get ad(){return ad},untilSkipped:function(){if(skipped)return Promise.resolve();return new Promise(function(r){waiters.push(r)})},destroy:destroy,_setAd:function(a){ad=a||ad}};
   }
